@@ -1,0 +1,47 @@
+{
+
+  "manifest_version": 2,
+  "name": "Imdb2Trello",
+  "version": "1.0",
+
+  "description": "Insert a new card in a list on Trello, along with its rating and poster",
+
+  "icons": {
+    "48": "icons/border-48.png"
+  },
+
+  "background": {
+    "scripts": ["sendRequest.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://www.imdb.com/title/*"],
+      "js": ["extractInfo.js"]
+    }
+  ],
+  "permissions": [
+      "https://*.trello.com/*",
+      "activeTab",
+      "storage"
+  ],
+
+  "page_action":{
+    "show_matches": ["*://www.imdb.com/title/*"],
+    "default_icon": {
+        "48": "icons/border-48.png"
+    },
+    "default_title": "Imdb2Trello"
+  },
+
+  "options_ui": {
+    "page": "settings_popup.html"
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+        "id": "imdb2trello@jd.guiennet.fr"
+    }
+  }
+
+}
