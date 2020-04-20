@@ -1,12 +1,21 @@
-LIST_ID = "5e81ef932a12620391c2884f";
-KEY = null;
-TOKEN = null;
 BASE_URL = "https://api.trello.com/1/cards";
-tab_id = null;
 
 //on receiving info about the movie, make a first request to create the trello card, then a second request to add the image to it
 browser.runtime.onMessage.addListener( (data, sender, sendResponse) => {
+    var setting = browser.storage.sync.get(["key", "token", "list_id"]);
+    setting.then(sendRequest.bind(null, data), onError);
     console.log(`${BASE_URL}?idList=${LIST_ID}&key=${KEY}&token=${TOKEN}&name=${data.title}&desc=score:${data.rating_value} rating_nbr:${data.rating_count}`);
+});
+
+function onError(error){
+    console.error(`Error: ${error}`);
+}
+
+function sendRequest(data, setting){
+    KEY = setting.key;
+    TOKEN = setting.token;
+    LIST_ID = setting.list_id;
+
     var r = new XMLHttpRequest();
     r.open('POST', `${BASE_URL}?idList=${LIST_ID}&key=${KEY}&token=${TOKEN}&name=${data.title}&desc=score:${data.rating_value} rating_nbr:${data.rating_count}`);
     r.onload = () => {
@@ -32,34 +41,24 @@ browser.runtime.onMessage.addListener( (data, sender, sendResponse) => {
 
     r.send(null);
 
-    console.log(data);
-});
-
-function onError(error){
-    console.error(`Error: ${error}`);
 }
-
-browser.tabs.query({
-    currentWindow: true,
-    active: true
-}).then(setTabId).catch(onError);
-
-var setting = browser.storage.sync.get(["key", "token"]);
-setting.then(init, onError);
 
 
 
 function setTabId(tabs){
+    console.log("setTabId called");
+    console.log(tabs);
     tab_id = tabs[0].id;
     //browser.pageAction.hide(tab_id);
 }
 
-function init(setting) {
-    KEY = setting.key;
-    TOKEN = setting.token;
-    //browser.pageAction.show(tab_id);
-    browser.pageAction.onClicked.addListener(() => {
-        browser.tabs.sendMessage(tab_id, "");
-    });
-}
+browser.pageAction.onClicked.addListener(() => {
+        browser.tabs.query({
+                currentWindow: true,
+                active: true
+            }).then((tabs) => {
+                browser.tabs.sendMessage(tabs[0].id, "");
+                console.log(`clicked, sending a message to ${tabs[0].id}`); 
+            }).catch(onError);
+     });
 

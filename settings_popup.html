@@ -7,15 +7,31 @@
   </head>
 
   <body>
+    <br/><br/>
     <form>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="lusername"><br/><br/>
+
         <label for="key">Key:</label>
         <input type="text" id="key" name="lkey"><br/><br/>
 
         <label for="token">Token:</label>
         <input type="text" id="token" name="ltoken"><br/><br/>
 
+        
         <input type="submit" value="Save">
     </form>
+    
+    <label for="trello_boards">Choose a board:</label>
+    <select name="board" id="trello_boards">
+    </select>
+    <br/>
+    <br/>
+    <div id="trello_lists_wrapper">
+        <label for="trello_lists">Choose a list:</label>
+        <select id="trello_lists">
+        </select>
+    </div>
 
     <script src="settings_popup.js"></script>
   </body>
