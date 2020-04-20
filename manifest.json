@@ -11,13 +11,13 @@
   },
 
   "background": {
-    "scripts": ["sendRequest.js"]
+    "scripts": ["background.js"]
   },
 
   "content_scripts": [
     {
       "matches": ["*://www.imdb.com/title/*"],
-      "js": ["extractInfo.js"]
+      "js": ["content.js"]
     }
   ],
   "permissions": [

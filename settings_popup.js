@@ -42,7 +42,6 @@ function getTrelloList(){
 }
 
 function makeOptionDefault(select, value){
-    console.log(`option[value = '${board}']`);
     console.log(select.querySelector(`option[value = ${board}]`));
 }
 
@@ -100,6 +99,7 @@ function saveSettings(e) {
 }
 
 function loadSettings() {
+    //!\\ we make key, token and username global
     function setSettings(data){
         if (data.key === undefined && data.key !== ""){
             console.log("key hasn't been set yet");
