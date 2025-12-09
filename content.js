@@ -1,44 +1,62 @@
 console.log("Content script loaded");
 
+async function getImage(full_poster_url) {
+    const img_url = await browser.runtime.sendMessage({
+            action: "fetchPage",
+            url: full_poster_url
+    });
+    console.log("Retrieved img_url:", img_url)
+    return img_url;
+};
+
 //This script waits to be notified by the background script
 //and parse the data and send it when it happens
-browser.runtime.onMessage.addListener( () => {
+browser.runtime.onMessage.addListener( async () => {
 
     console.log("Asking for data");
 
     var movie_title = document.evaluate(
-        '//div[contains(@class, "title_wrapper")]/h1/text()', 
+        '//span[@data-testid="hero__primary-text"]/text()',
         document, 
         null, 
-        XPathResult.FIRST_ORDERED_NODE_TYPE)
-        .singleNodeValue
+        XPathResult.STRING_TYPE)
+    .stringValue
+    console.log(movie_title)
 
     var rating_value = document.evaluate(
-        '//span[contains(@itemprop, "ratingValue")]/text()', 
+        '//div[@data-testid="hero-rating-bar__aggregate-rating__score"]/span/text()',
         document, 
         null, 
-        XPathResult.FIRST_ORDERED_NODE_TYPE)
-        .singleNodeValue;
+        XPathResult.STRING_TYPE)
+    .stringValue;
+    console.log(rating_value)
 
-    var rating_count = document.evaluate(
-        '//span[contains(@itemprop, "ratingCount")]/text()', 
+    /*var rating_count = document.evaluate(
+        '//div[@data-testid="hero-rating-bar__aggregate-rating__score"]/span/text()',
         document, 
         null, 
         XPathResult.FIRST_ORDERED_NODE_TYPE)
-        .singleNodeValue;
-    var poster = document.evaluate(
-        '//div[contains(@class, "poster")]/a/img/@src', 
-        document, 
-        null, 
-        XPathResult.FIRST_ORDERED_NODE_TYPE)
-        .singleNodeValue;
+    .singleNodeValue;
+    */
 
+    var poster_url = document.evaluate(
+        '//div[@data-testid="hero-media__poster"]/a/@href',
+        document, 
+        null, 
+        XPathResult.STRING_TYPE)
+    .stringValue 
+    console.log(poster_url)
+    var full_poster_url = new URL(poster_url, window.location.origin).href
+    console.log(full_poster_url)
+
+    var img_url = await getImage(full_poster_url)
     // we got everything we need, bundle them inside an object
     var data = { 
-        'rating_value': rating_value.data,
-        'rating_count': rating_count.data,
-        'title' : movie_title.data,
-        'poster_url': poster.value,
+        'action': 'send_to_trello',
+        'rating_value': rating_value,
+        //'rating_count': rating_count.data,
+        'title' : movie_title,
+        'poster_url': img_url,
     }
 
     // and send it to the background script sendRequest.js
