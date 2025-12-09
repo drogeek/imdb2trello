@@ -2,7 +2,7 @@
 
   "manifest_version": 2,
   "name": "Imdb2Trello",
-  "version": "1.0",
+  "version": "1.1",
 
   "description": "Insert a new card in a list on Trello, along with its rating and poster",
 
