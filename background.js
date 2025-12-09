@@ -1,5 +1,36 @@
 BASE_URL = "https://api.trello.com/1/cards";
 
+
+function updateActionForTab(tabId, url) {
+    console.log(url)
+    const allowed = [
+        /https:\/\/.*\.imdb\.com\/title\/.*/,
+    ];
+
+    const shouldEnable = allowed.some(regex => regex.test(url));
+    console.log(shouldEnable)
+
+    if (shouldEnable) {
+        browser.action.enable(tabId);
+    } else {
+        browser.action.disable(tabId);
+    }
+}
+
+// When a tab updates (navigation, reload, URL change)
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === "loading" || changeInfo.url) {
+        updateActionForTab(tabId, tab.url ?? changeInfo.url ?? "");
+    }
+});
+
+// When switching tabs
+browser.tabs.onActivated.addListener(async (activeInfo) => {
+    const tab = await browser.tabs.get(activeInfo.tabId);
+    updateActionForTab(activeInfo.tabId, tab.url ?? "");
+});
+
+
 //on receiving info about the movie, make a first request to create the trello card, then a second request to add the image to it
 browser.runtime.onMessage.addListener( (data) => {
     if (data.action === "send_to_trello") {
@@ -9,46 +40,51 @@ browser.runtime.onMessage.addListener( (data) => {
     }
 });
 
-browser.runtime.onMessage.addListener((msg) => {
+
+browser.runtime.onMessage.addListener((msg, sender) => {
     if (msg.action === "fetchPage") {
-        return new Promise(async (resolve, reject) => {
-
-            // 1. Open hidden tab
-            const tab = await browser.tabs.create({ url: msg.url, active: false });
-
-            // 2. Wait for tab to finish loading
-            await new Promise(res => {
-                const listener = (tabId, changeInfo) => {
-                    if (tabId === tab.id && changeInfo.status === "complete") {
-                        browser.tabs.onUpdated.removeListener(listener);
-                        res();
-                    }
-                };
-                browser.tabs.onUpdated.addListener(listener);
-            });
-
-            // 3. Execute XPath / extract value
-            const [imgUrl] = await browser.tabs.executeScript(tab.id, {
-                code: `
-                    document.evaluate(
-                        '//div[@data-testid="media-viewer"]//img/@src',
-                        document,
-                        null,
-                        XPathResult.STRING_TYPE,
-                        null
-                    ).stringValue;
-                `
-            });
-
-            // 4. Close tab
-            await browser.tabs.remove(tab.id);
-
-            // 5. Resolve the promise → sends value to content.js
-            resolve(imgUrl);
-
-        });
+        // IMPORTANT: return the Promise directly
+        return fetchImageFromPage(msg.url);
     }
 });
+
+// Must be top-level async function
+async function fetchImageFromPage(url) {
+    // 1. Open hidden tab
+    const tab = await browser.tabs.create({ url, active: false });
+
+    // 2. Wait for loading
+    await new Promise(resolve => {
+        const listener = (tabId, changeInfo) => {
+            if (tabId === tab.id && changeInfo.status === "complete") {
+                browser.tabs.onUpdated.removeListener(listener);
+                resolve();
+            }
+        };
+        browser.tabs.onUpdated.addListener(listener);
+    });
+
+    // 3. Execute XPath
+    const results = await browser.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => {
+            return document.evaluate(
+                '//div[@data-testid="media-viewer"]//img/@src',
+                document,
+                null,
+                XPathResult.STRING_TYPE,
+            ).stringValue;
+        }
+    });
+
+    const imgUrl = results[0].result;
+
+    // 4. Close tab
+    await browser.tabs.remove(tab.id);
+
+    // 5. Return the value back to content.js
+    return imgUrl;
+}
 
 function onError(error){
     console.error(`Error: ${error}`);
@@ -86,7 +122,7 @@ function sendRequest(data, setting){
 
     
 
-browser.pageAction.onClicked.addListener(() => {
+browser.action.onClicked.addListener(() => {
     browser.tabs.query({
         currentWindow: true,
         active: true

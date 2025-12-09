@@ -1,6 +1,6 @@
 {
 
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Imdb2Trello",
   "version": "1.1",
 
@@ -21,16 +21,21 @@
     }
   ],
   "permissions": [
-      "https://*.trello.com/*",
-      "*://*.imdb.com/*",
       "activeTab",
-      "storage"
+      "storage",
+      "tabs",
+      "scripting"
   ],
 
-  "page_action":{
-    "show_matches": ["*://www.imdb.com/title/*"],
+
+  "host_permissions": [
+      "https://*.trello.com/*",
+      "*://*.imdb.com/*"
+  ],
+
+  "action":{
     "default_icon": {
-        "48": "icons/imdb2trello.svg"
+        "48": "icons/imdb2trello.png"
     },
     "default_title": "Imdb2Trello"
   },
