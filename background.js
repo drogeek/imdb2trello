@@ -2,13 +2,11 @@ BASE_URL = "https://api.trello.com/1/cards";
 
 
 function updateActionForTab(tabId, url) {
-    console.log(url)
     const allowed = [
         /https:\/\/.*\.imdb\.com\/title\/.*/,
     ];
 
     const shouldEnable = allowed.some(regex => regex.test(url));
-    console.log(shouldEnable)
 
     if (shouldEnable) {
         browser.action.enable(tabId);
@@ -90,44 +88,39 @@ function onError(error){
     console.error(`Error: ${error}`);
 }
 
-function sendRequest(data, setting){
-    var KEY = setting.key;
-    var TOKEN = setting.token;
-    var LIST_ID = setting.list_id;
-
-    var r = new XMLHttpRequest();
-    r.open('POST', `${BASE_URL}?idList=${LIST_ID}&key=${KEY}&token=${TOKEN}&name=${data.title}&desc=score:${data.rating_value}`);
-    r.onload = () => {
-        var cardId = JSON.parse(r.response).id;
-        var r2 = new XMLHttpRequest();
-        r2.open('POST', `${BASE_URL}/${cardId}/attachments?idList=${LIST_ID}&key=${KEY}&token=${TOKEN}&url=${data.poster_url}`);
-        r2.onload = () => {
-            //TODO: add a notification that everything went well?
-            console.log("ok");
-        };
-        r2.onerror = () => {
-            //TODO: add a notification that something went wrong?
-            console.log("error during second request");
-        };
-
-        r2.send(null);
-    };
-    r.onerror = () => {
-        //TODO: add a notification that something went wrong?
-        console.log("error during first request");
-    };
-
-    r.send(null);
+function generate_trello_card_title(movie_title, movie_rating, personal_note){
+    var title = movie_title + ' - IMDb: ' + movie_rating;
+    if (personal_note) {
+        title += ' (' + personal_note + ')';
+    }
+    return title;
 }
 
-    
+function sendRequest(data, setting){
+    var api_key = setting.key;
+    var token = setting.token;
+    var list_id = setting.list_id;
 
-browser.action.onClicked.addListener(() => {
-    browser.tabs.query({
-        currentWindow: true,
-        active: true
-    }).then((tabs) => {
-        browser.tabs.sendMessage(tabs[0].id, "");
-    }).catch(onError);
+    
+    var trello_card_title = generate_trello_card_title(data.title, data.rating_value, data.note_value);
+
+    fetch(`${BASE_URL}?idList=${list_id}&key=${api_key}&token=${token}&name=${trello_card_title}&desc=score:${data.rating_value}`, {method: "POST"})
+        .then(response => response.json())
+        .then(card_info => {
+            const card_id = card_info.id;
+            fetch(`${BASE_URL}/${card_id}/attachments?idList=${list_id}&key=${api_key}&token=${token}&url=${data.poster_url}`, {method: "POST"});
+        }
+    );
+}
+
+browser.runtime.onMessage.addListener((msg) => {
+    if (msg.action === "note_popup"){
+        browser.tabs.query({
+            currentWindow: true,
+            active: true
+        }).then((tabs) => {
+            browser.tabs.sendMessage(tabs[0].id, msg.note_value);
+        }).catch(onError);
+    }
 });
 

@@ -11,7 +11,7 @@ async function getImage(full_poster_url) {
 
 //This script waits to be notified by the background script
 //and parse the data and send it when it happens
-browser.runtime.onMessage.addListener( async () => {
+browser.runtime.onMessage.addListener( async (note_value) => {
 
     console.log("Asking for data");
 
@@ -57,6 +57,7 @@ browser.runtime.onMessage.addListener( async () => {
         //'rating_count': rating_count.data,
         'title' : movie_title,
         'poster_url': img_url,
+        'note_value': note_value
     }
 
     // and send it to the background script sendRequest.js

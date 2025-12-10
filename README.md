@@ -8,3 +8,5 @@ The plugin requires permissions for the trello API, for this, you need:
     As for now, you need to create a power-up here https://trello.com/power-ups/admin, and then get the API Key
 - a token
     you can get it using https://trello.com/1/authorize?expiration=never&name=imdb2trello&scope=read,write&response_type=token&key=YOUR_API_KEY
+
+You can provide those info inside the plugin's settings
