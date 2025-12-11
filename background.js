@@ -3,7 +3,7 @@ BASE_URL = "https://api.trello.com/1/cards";
 
 function updateActionForTab(tabId, url) {
     const allowed = [
-        /https:\/\/.*\.imdb\.com\/title\/.*/,
+        /https:\/\/.*\.imdb\.com\/.*\/?title\/.*/,
     ];
 
     const shouldEnable = allowed.some(regex => regex.test(url));
@@ -91,7 +91,7 @@ function onError(error){
 function generate_trello_card_title(movie_title, movie_rating, personal_note){
     var title = movie_title + ' - IMDb: ' + movie_rating;
     if (personal_note) {
-        title += ' (' + personal_note + ')';
+        title += ' (' + personal_note.trim() + ')';
     }
     return title;
 }
@@ -119,7 +119,17 @@ browser.runtime.onMessage.addListener((msg) => {
             currentWindow: true,
             active: true
         }).then((tabs) => {
-            browser.tabs.sendMessage(tabs[0].id, msg.note_value);
+            const tab = tabs[0];
+
+            if (!tab || !tab.url || !tab.url.startsWith("http")) {
+                console.warn("No content script possible on this tab.");
+                return;
+            }
+
+            browser.tabs.sendMessage(tab.id, msg.note_value).catch(err => {
+                console.warn("Content script not available:", err);
+            });
+
         }).catch(onError);
     }
 });

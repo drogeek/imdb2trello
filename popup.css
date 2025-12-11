@@ -1,0 +1,68 @@
+/* Make the whole body take the viewport height and remove default margins */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* Container flex setup */
+.container {
+  display: flex;
+  flex-direction: column; /* vertical stacking */
+  align-items: stretch;   /* make children fill width */
+  padding: 20px;
+  gap: 15px;              /* space between elements */
+  height: 100%;           /* fill available height */
+  box-sizing: border-box;
+}
+
+/* Input styling */
+#note {
+  padding: 10px;
+  font-size: 16px;
+  min-height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Button styling */
+#submit {
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #0079bf;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+#submit:hover {
+  background-color: #005a8c;
+}
+
+/* Wrappers for select inputs */
+#trello_boards_wrapper, #trello_lists_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Select styling */
+select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Optional: make the container scrollable if too tall */
+.container {
+  overflow-y: auto;
+}

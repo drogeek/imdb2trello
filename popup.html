@@ -3,24 +3,29 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="popup.css">
   </head>
 
   <body>
-    <input type="text" id="note" placeholder="Add any additional information you like :)">
-    <button id="submit">Send to Trello</button>
+    <div class="container">
+        <input type="text" id="note" placeholder="Add any additional information you like :)">
+        <button id="submit">Send to Trello</button>
 
-    <div id="trello_boards_wrapper">
-        <label for="trello_boards">Choose a board:</label>
-        <select name="board" id="trello_boards">
-        </select>
-    <br/>
-    <br/>
+        <div id="trello_boards_wrapper">
+            <label for="trello_boards">Choose a board:</label>
+            <select name="board" id="trello_boards">
+            </select>
+        <br/>
+        <br/>
+        </div>
+        <div id="trello_lists_wrapper">
+            <label for="trello_lists">Choose a list:</label>
+            <select id="trello_lists">
+            </select>
+        </div>
     </div>
-    <div id="trello_lists_wrapper">
-        <label for="trello_lists">Choose a list:</label>
-        <select id="trello_lists">
-        </select>
-    </div>
+
     <script src="popup.js" type="module"></script>
   </body>
 

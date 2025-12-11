@@ -1,25 +1,94 @@
-form {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    margin-bottom: 15px;
+/* Reset weird browser popup defaults */
+* {
+    box-sizing: border-box;
 }
 
+/* Center page */
+html, body {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 5%;
+    margin-right: 5%;
+    padding: 0;
+    height: 100%;
+}
+
+/* MAIN CARD */
+#container {
+    display: flex !important;
+    justify-content: space-evenly;
+
+    width: 95%;
+    max-width: 480px;
+    padding: 20px;
+
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+    gap: 30px;
+}
+
+/* MAKE SURE TOP + BOTTOM STACK */
+#top_container,
 #bottom_container {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+    display: flex !important;
+    flex-grow: 1;
+    flex-direction: column !important;
+    width: 100%;
+    gap: 20px;
 }
 
-#trello_boards_wrapper {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+/* FORCE FORM INTO A COLUMN */
+form {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100%;
+    gap: 12px;
 }
 
-#trello_lists_wrapper {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+/* Field styling */
+label {
+    font-weight: 600;
 }
 
+input[type="text"],
+select {
+    width: 100% !important;  /* ← Force full width on Android */
+    padding: 10px;
+
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+/* Save button */
+input[type="submit"] {
+    margin-top: 10px;
+    padding: 12px;
+    width: 100%;
+
+    background: #007bff;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background: #0067d9;
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+    .container {
+
+        width: 98%;
+        border-radius: 10px;
+    }
+
+    input, select {
+        font-size: 18px;
+    }
+}
