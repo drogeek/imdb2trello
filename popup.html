@@ -12,17 +12,23 @@
         <input type="text" id="note" placeholder="Add any additional information you like :)">
         <button id="submit">Send to Trello</button>
 
-        <div id="trello_boards_wrapper">
-            <label for="trello_boards">Choose a board:</label>
-            <select name="board" id="trello_boards">
-            </select>
-        <br/>
-        <br/>
+        <div class="fold-header" id="boards_toggle">
+            <span>Trello parameters</span>
+            <span class="arrow">▶</span>
         </div>
-        <div id="trello_lists_wrapper">
-            <label for="trello_lists">Choose a list:</label>
-            <select id="trello_lists">
-            </select>
+        <div class="fold-content" id="trello_parameters">
+          <div id="trello_boards_wrapper">
+              <label for="trello_boards">Choose a board:</label>
+              <select name="board" id="trello_boards">
+              </select>
+          <br/>
+          <br/>
+          </div>
+          <div id="trello_lists_wrapper">
+              <label for="trello_lists">Choose a list:</label>
+              <select id="trello_lists">
+              </select>
+          </div>
         </div>
     </div>
 

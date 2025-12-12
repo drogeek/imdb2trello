@@ -45,6 +45,10 @@ html, body {
   background-color: #005a8c;
 }
 
+#trello_parameters {
+  padding: 10px;
+}
+
 /* Wrappers for select inputs */
 #trello_boards_wrapper, #trello_lists_wrapper {
   display: flex;
@@ -66,3 +70,41 @@ select {
 .container {
   overflow-y: auto;
 }
+
+.fold-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px;
+    font-weight: bold;
+    background: #eee;
+    border-radius: 6px;
+    margin-top: 10px;
+    user-select: none;
+}
+
+.fold-content {
+    display: none; /* hidden by default */
+    margin-top: 8px;
+}
+
+.fold-header .arrow {
+    transition: transform 0.2s ease;
+}
+
+.fold-header.open .arrow {
+    transform: rotate(90deg);
+}
+
+.settings-disabled {
+  background-color: #eee;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.settings-disabled select {
+    background-color: #ddd;
+    color: #777;
+}
+

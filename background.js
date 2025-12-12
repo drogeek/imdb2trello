@@ -49,6 +49,7 @@ browser.runtime.onMessage.addListener((msg, sender) => {
 // Must be top-level async function
 async function fetchImageFromPage(url) {
     // 1. Open hidden tab
+    console.log("Opening tab on url ", url)
     const tab = await browser.tabs.create({ url, active: false });
 
     // 2. Wait for loading

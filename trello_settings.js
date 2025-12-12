@@ -4,7 +4,7 @@ function reverseMapping(mapping){
     return Object.fromEntries(Object.entries(mapping).map(([key, value]) => [value, key]))
 }
 
-function clearHtmlOption(select){
+function clearHtmlOptions(select){
     while(select.firstChild){
         select.removeChild(select.lastChild);
     }
@@ -21,7 +21,6 @@ function addHtmlOption(select, name, value){
 
 async function getTrelloBoards(username, api_key, token){
     return fetch(`${BASE_URL}/members/${username}/boards?key=${api_key}&token=${token}`)
-            .then(response => response.json())
 }
 
 function getBoardIdMapping(boards) {
@@ -33,23 +32,31 @@ function getBoardIdMapping(boards) {
 }
 
 async function fillTrelloBoardsElement(username, api_key, token, previously_selected_board_id){
-    console.log("Filling the trello board list")
     var board_elem = document.querySelector("#trello_boards");
-    //clearOption(board_elem);
-    const boards = await getTrelloBoards(username, api_key, token);
-    const board_mapping = getBoardIdMapping(boards);
-    const reversed_board_mapping = reverseMapping(board_mapping)
-    Object.entries(board_mapping).forEach(([board_id, board_name]) => {
-        addHtmlOption(board_elem, board_id, board_name);
-    });
-    if (previously_selected_board_id !== undefined && previously_selected_board_id in reversed_board_mapping) {
-        console.log("Already stored board id:", reversed_board_mapping[previously_selected_board_id])
-        board_elem.value = previously_selected_board_id;
+    const boards_request = await getTrelloBoards(username, api_key, token);
+    if (boards_request.ok){
+        console.log("Filling the trello board list")
+        const boards = await boards_request.json();
+        const board_mapping = getBoardIdMapping(boards);
+        const reversed_board_mapping = reverseMapping(board_mapping)
+        Object.entries(board_mapping).forEach(([board_id, board_name]) => {
+            addHtmlOption(board_elem, board_id, board_name);
+        });
+        if (previously_selected_board_id !== undefined && previously_selected_board_id in reversed_board_mapping) {
+            console.log("Already stored board id:", reversed_board_mapping[previously_selected_board_id])
+            board_elem.value = previously_selected_board_id;
+        }
+        else{
+            console.log("No board id found")
+            await browser.storage.sync.set({"board_id": board_elem.value})
+        }
     }
-    else{
-        console.log("No board id found")
-        await browser.storage.sync.set({"board_id": board_elem.value})
+    else {
+        var lists_elem = document.querySelector("#trello_lists");
+        clearHtmlOptions(board_elem);
+        clearHtmlOptions(lists_elem);
     }
+    return boards_request.ok;
 }
 
 
@@ -86,18 +93,26 @@ async function fillTrelloListsElement(board_id, api_key, token, previously_selec
     }
 }
 
-function fillUpTrelloData(){
-    Promise.resolve(browser.storage.sync.get(["key", "token", "username", "board_id", "list_id"])).then(setting => {
-        fillTrelloBoardsElement(setting.username, setting.key, setting.token, setting.board_id);
-        fillTrelloListsElement(setting.board_id, setting.key, setting.token, setting.list_id);
-    });
+async function fillUpTrelloData(){
+    const settings = await browser.storage.sync.get(["key", "token", "username", "board_id", "list_id"]);
+    const boards_ok = await fillTrelloBoardsElement(settings.username, settings.key, settings.token, settings.board_id);
+
+    var trello_parameters_elem = document.querySelector("#trello_parameters");
+    if (boards_ok) {
+        fillTrelloListsElement(settings.board_id, settings.key, settings.token, settings.list_id);
+        trello_parameters_elem.classList.remove("settings-disabled");
+    }
+    else{
+        trello_parameters_elem.classList.add("settings-disabled");
+    }
+    trello_parameters_elem.querySelectorAll("select").forEach(sel => sel.disabled = !boards_ok);
 }
 
 /* exported functions */
 
 
 export function initializeTrelloView(document){
-    fillUpTrelloData();
+    Promise.resolve(fillUpTrelloData());
     document.querySelector("#trello_boards").onchange = selectedBoardChanged;
     document.querySelector("#trello_lists").onchange = selectedListChanged;
 }
@@ -114,7 +129,7 @@ function selectedBoardChanged(event){
     console.log("selectedBoardChanged");
     const boards_elem = event.target;
     var list_elem = document.querySelector("#trello_lists");
-    clearHtmlOption(list_elem);
+    clearHtmlOptions(list_elem);
 
     Promise.resolve(browser.storage.sync.get(["key", "token", "username"])).then(setting => {
         browser.storage.sync.set({"board_id": boards_elem.value,"list_id": undefined}).then(
@@ -122,3 +137,4 @@ function selectedBoardChanged(event){
         )
     });
 }
+

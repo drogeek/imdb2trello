@@ -14,6 +14,7 @@ function saveSettings(e) {
 function setSettings(data){
     if (data.key === undefined && data.key !== ""){
         console.log("key hasn't been set yet");
+        key = "";
     }
     else{
         key = data.key;
@@ -21,6 +22,7 @@ function setSettings(data){
 
     if (data.token === undefined && data.token !== ""){
         console.log("token hasn't been set yet");
+        token = "";
     }
     else{
         token = data.token;
@@ -28,6 +30,7 @@ function setSettings(data){
     
     if (data.username === undefined && data.token !== ""){
         console.log("username hasn't been set yet");
+        username = "";
     }
     else{
         username = data.username;

@@ -19,5 +19,17 @@ document.addEventListener("DOMContentLoaded", async () =>{
     });
     submit_elem.addEventListener("click", send_value);
     input_elem.focus();
+
+    const toggleHeader = document.getElementById("boards_toggle");
+    const boardsWrapper = document.getElementById("trello_parameters");
+
+    toggleHeader.addEventListener("click", () => {
+        const isOpen = toggleHeader.classList.toggle("open");
+        boardsWrapper.style.display = isOpen ? "block" : "none";
+    });
+
     initializeTrelloView(document);
+
+
+    
 });

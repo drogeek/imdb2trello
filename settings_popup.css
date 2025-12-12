@@ -1,7 +1,3 @@
-/* Reset weird browser popup defaults */
-* {
-    box-sizing: border-box;
-}
 
 /* Center page */
 html, body {
@@ -15,28 +11,26 @@ html, body {
 
 /* MAIN CARD */
 #container {
-    display: flex !important;
-    justify-content: space-evenly;
 
     width: 95%;
     max-width: 480px;
-    padding: 20px;
+    padding: 10px;
 
     background: white;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 2 4px 12px rgba(0,0,0,0.1);
 
     gap: 30px;
 }
 
-/* MAKE SURE TOP + BOTTOM STACK */
 #top_container,
-#bottom_container {
+#trello_parameters {
     display: flex !important;
     flex-grow: 1;
     flex-direction: column !important;
     width: 100%;
     gap: 20px;
+    padding: 20px;
 }
 
 /* FORCE FORM INTO A COLUMN */
@@ -92,3 +86,15 @@ input[type="submit"]:hover {
         font-size: 18px;
     }
 }
+
+.settings-disabled {
+  background-color: #eee;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.settings-disabled select {
+    background-color: #ddd;
+    color: #777;
+}
+
