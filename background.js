@@ -105,7 +105,10 @@ function sendRequest(data, setting){
     
     var trello_card_title = generate_trello_card_title(data.title, data.rating_value, data.note_value);
 
-    fetch(`${BASE_URL}?idList=${list_id}&key=${api_key}&token=${token}&name=${trello_card_title}&desc=score:${data.rating_value}`, {method: "POST"})
+    const desc_params = new URLSearchParams();
+    console.log(data.imdb_url);
+    desc_params.set('desc', `score: ${data.rating_value}\nimdb: ${data.imdb_url}`)
+    fetch(`${BASE_URL}?idList=${list_id}&key=${api_key}&token=${token}&name=${trello_card_title}&${desc_params}`, {method: "POST"})
         .then(response => response.json())
         .then(card_info => {
             const card_id = card_info.id;

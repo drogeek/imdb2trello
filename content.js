@@ -31,13 +31,6 @@ browser.runtime.onMessage.addListener( async (note_value) => {
     .stringValue;
     console.log(rating_value)
 
-    /*var rating_count = document.evaluate(
-        '//div[@data-testid="hero-rating-bar__aggregate-rating__score"]/span/text()',
-        document, 
-        null, 
-        XPathResult.FIRST_ORDERED_NODE_TYPE)
-    .singleNodeValue;
-    */
 
     var poster_url = document.evaluate(
         '//div[@data-testid="hero-media__poster"]/a/@href',
@@ -54,10 +47,10 @@ browser.runtime.onMessage.addListener( async (note_value) => {
     var data = { 
         'action': 'send_to_trello',
         'rating_value': rating_value,
-        //'rating_count': rating_count.data,
         'title' : movie_title,
         'poster_url': img_url,
-        'note_value': note_value
+        'note_value': note_value,
+        'imdb_url': window.location.href,
     }
 
     // and send it to the background script sendRequest.js
